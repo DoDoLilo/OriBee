@@ -4,4 +4,6 @@
     <string name="end_record">结束采集</string>
     <string name="x">x:</string>
     <string name="default_hz">0 Hz</string>
+    <string name="server_open">打开服务器</string>
+    <string name="sync_time">时间同步</string>
 </resources>

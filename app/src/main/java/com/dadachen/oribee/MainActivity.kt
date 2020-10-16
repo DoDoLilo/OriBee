@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.SeekBar
 import com.dadachen.magicorientation.utils.writeToLocalStorage
+import com.dadachen.oribee.time.runServer
 import com.dadachen.oribee.utils.Utils
 import kotlinx.android.synthetic.main.activity_choose.*
 import java.lang.StringBuilder
@@ -125,7 +126,16 @@ class MainActivity : AppCompatActivity() {
             }
 
         })
+        initTimeSyncUI()
     }
+
+    private fun initTimeSyncUI() {
+        bt_server_time.setOnClickListener {
+            runServer()
+        }
+
+    }
+
     private var recording = false
     private val stringBuilder = StringBuilder()
     private var frequency = 200

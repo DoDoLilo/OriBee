@@ -47,4 +47,24 @@
             app:layout_constraintStart_toEndOf="@+id/seekBar_frequency"
             app:layout_constraintTop_toBottomOf="@+id/bt_end_record" />
 
+    <Button
+        android:id="@+id/bt_server_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="296dp"
+        android:text="@string/server_open"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/bt_time_sync"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="@string/sync_time"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/bt_server_time" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
