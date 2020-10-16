@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">OriBee</string>
+    <string name="start_record">开始采集</string>
+    <string name="end_record">结束采集</string>
+    <string name="x">x:</string>
+    <string name="default_hz">0 Hz</string>
+</resources>
