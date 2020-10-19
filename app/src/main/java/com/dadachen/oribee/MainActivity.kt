@@ -145,7 +145,7 @@ class MainActivity : AppCompatActivity() {
         thread(start = true) {
             while (recording){
                 val content = "${System.currentTimeMillis()},${acc[0]},${acc[1]},${acc[2]},${gyro[0]},${gyro[1]},${gyro[2]},${rotVector[0]},${rotVector[1]},${rotVector[2]},${rotVector[3]}"
-                stringBuilder.appendln(content)
+                stringBuilder.appendLine(content)
                 Thread.sleep((1000/frequency).toLong())
             }
         }
