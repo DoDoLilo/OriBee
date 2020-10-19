@@ -35,7 +35,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_choose)
         sharedPreferences = getPreferences(Context.MODE_PRIVATE)
-        initSensor()
+//        initSensor()
         initView()
 
     }
@@ -86,7 +86,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        initSensor()
+//        initSensor()
     }
 
     override fun onPause() {
@@ -177,6 +177,7 @@ class MainActivity : AppCompatActivity() {
     private val stringBuilder = StringBuilder()
     private var frequency = 200
     private fun startRecord() {
+        initSensor()
         stringBuilder.clear()
         recording = true
         thread(start = true) {
@@ -188,6 +189,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
     private fun endRecord() {
+        sensorManager.unregisterListener(accl)
+        sensorManager.unregisterListener(gyrol)
+        sensorManager.unregisterListener(rotl)
         recording = false
         writeToLocalStorage("$externalCacheDir/IMU-acc-gyro-rotv-${System.currentTimeMillis()}.csv",stringBuilder.toString())
     }
