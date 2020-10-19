@@ -1,5 +1,6 @@
 package com.dadachen.oribee
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import android.hardware.Sensor
@@ -10,7 +11,9 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.SeekBar
+import android.widget.Toast
 import com.dadachen.magicorientation.utils.writeToLocalStorage
+import com.dadachen.oribee.time.getTimeByHttpClient
 import com.dadachen.oribee.time.runServer
 import com.dadachen.oribee.utils.Utils
 import kotlinx.android.synthetic.main.activity_choose.*
@@ -34,7 +37,7 @@ class MainActivity : AppCompatActivity() {
         initView()
 
     }
-    val rotl = object : SensorEventListener {
+    private val rotl = object : SensorEventListener {
         override fun onSensorChanged(p0: SensorEvent?) {
             rotVector[0] = p0!!.values[0]
             rotVector[1] = p0.values[1]
@@ -46,7 +49,7 @@ class MainActivity : AppCompatActivity() {
             Log.d("imu", "rot accuracy changed")
         }
     }
-    val gyrol = object : SensorEventListener {
+    private val gyrol = object : SensorEventListener {
         override fun onSensorChanged(p0: SensorEvent?) {
             gyro[0] = p0!!.values[0]
             gyro[1] = p0.values[1]
@@ -57,7 +60,7 @@ class MainActivity : AppCompatActivity() {
             Log.d("imu", "gyro accuracy changed")
         }
     }
-    val accl = object : SensorEventListener {
+    private val accl = object : SensorEventListener {
         override fun onSensorChanged(p0: SensorEvent?) {
             acc[0] = p0!!.values[0]
             acc[1] = p0.values[1]
@@ -91,6 +94,7 @@ class MainActivity : AppCompatActivity() {
         sensorManager.unregisterListener(rotl)
     }
     private val freq = "freq"
+    @SuppressLint("SetTextI18n")
     private fun initView() {
         bt_start_record.isEnabled = true
         bt_end_record.isEnabled = false
@@ -126,12 +130,28 @@ class MainActivity : AppCompatActivity() {
             }
 
         })
+        //init
+
+        //init time sync ui
         initTimeSyncUI()
     }
-
+    private var timeOffset:Long = 0L
     private fun initTimeSyncUI() {
+        tv_local_ip_address.text = Utils.getIPAddress(true)
+        var ip = tv_local_ip_address.text.toString()
+        ip = ip.substring(0,ip.indexOfLast{it=='.'}+1)
+
+
         bt_server_time.setOnClickListener {
             runServer()
+        }
+        bt_time_sync.setOnClickListener {
+            ip += ev_remote_ip_address.text.toString()
+            if (Utils.isIP(ip)) {
+                timeOffset =  getTimeByHttpClient(ip)-System.currentTimeMillis()
+            }else{
+                Toast.makeText(this, "$ip is not valid", Toast.LENGTH_SHORT).show()
+            }
         }
 
     }
@@ -144,7 +164,7 @@ class MainActivity : AppCompatActivity() {
         recording = true
         thread(start = true) {
             while (recording){
-                val content = "${System.currentTimeMillis()},${acc[0]},${acc[1]},${acc[2]},${gyro[0]},${gyro[1]},${gyro[2]},${rotVector[0]},${rotVector[1]},${rotVector[2]},${rotVector[3]}"
+                val content = "${System.currentTimeMillis()+timeOffset},${acc[0]},${acc[1]},${acc[2]},${gyro[0]},${gyro[1]},${gyro[2]},${rotVector[0]},${rotVector[1]},${rotVector[2]},${rotVector[3]}"
                 stringBuilder.appendLine(content)
                 Thread.sleep((1000/frequency).toLong())
             }
