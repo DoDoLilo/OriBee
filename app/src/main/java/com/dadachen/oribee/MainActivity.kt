@@ -10,8 +10,10 @@ import android.hardware.SensorManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.SeekBar
 import android.widget.Toast
+import androidx.core.view.isVisible
 import com.dadachen.magicorientation.utils.writeToLocalStorage
 import com.dadachen.oribee.time.getTimeByHttpClient
 import com.dadachen.oribee.time.runServer
@@ -136,25 +138,38 @@ class MainActivity : AppCompatActivity() {
         initTimeSyncUI()
     }
     private var timeOffset:Long = 0L
+    @SuppressLint("SetTextI18n")
     private fun initTimeSyncUI() {
         tv_local_ip_address.text = Utils.getIPAddress(true)
         ev_remote_ip_address.setText(sharedPreferences.getString("ipn", ""))
         var ip = tv_local_ip_address.text.toString()
-        ip = ip.substring(0,ip.indexOfLast{it=='.'}+1)
         bt_server_time.setOnClickListener {
             runServer()
+            bt_server_time.text = "服务器已打开"
+            bt_server_time.isEnabled = false
+            bt_time_sync.isEnabled = false
+            bt_time_sync.visibility = View.INVISIBLE
+            ev_remote_ip_address.visibility = View.INVISIBLE
+            ev_remote_ip_address.isEnabled = false
         }
         bt_time_sync.setOnClickListener {
             val num = ev_remote_ip_address.text.toString()
             Utils.setValueBySharedPreference(sharedPreferences,"ipn",num)
+            ip = ip.substring(0,ip.indexOfLast{it=='.'}+1)
             ip += ev_remote_ip_address.text.toString()
             if (Utils.isIP(ip)) {
-                timeOffset =  getTimeByHttpClient(ip)-System.currentTimeMillis()
+                val remoteTime = getTimeByHttpClient(ip)
+                val localTime = System.currentTimeMillis()
+                timeOffset =  remoteTime-localTime
+                bt_server_time.isEnabled = false
+                bt_server_time.visibility = View.INVISIBLE
+                tv_offset_info.text="remote time: $remoteTime\nlocal time: $localTime\noffset: $timeOffset"
                 Log.d("time","offet: $timeOffset")
             }else{
                 Toast.makeText(this, "$ip is not valid", Toast.LENGTH_SHORT).show()
             }
         }
+
 
     }
 
