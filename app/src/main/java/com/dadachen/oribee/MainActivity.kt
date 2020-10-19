@@ -138,17 +138,19 @@ class MainActivity : AppCompatActivity() {
     private var timeOffset:Long = 0L
     private fun initTimeSyncUI() {
         tv_local_ip_address.text = Utils.getIPAddress(true)
+        ev_remote_ip_address.setText(sharedPreferences.getString("ipn", ""))
         var ip = tv_local_ip_address.text.toString()
         ip = ip.substring(0,ip.indexOfLast{it=='.'}+1)
-
-
         bt_server_time.setOnClickListener {
             runServer()
         }
         bt_time_sync.setOnClickListener {
+            val num = ev_remote_ip_address.text.toString()
+            Utils.setValueBySharedPreference(sharedPreferences,"ipn",num)
             ip += ev_remote_ip_address.text.toString()
             if (Utils.isIP(ip)) {
                 timeOffset =  getTimeByHttpClient(ip)-System.currentTimeMillis()
+                Log.d("time","offet: $timeOffset")
             }else{
                 Toast.makeText(this, "$ip is not valid", Toast.LENGTH_SHORT).show()
             }

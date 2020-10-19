@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -77,14 +76,16 @@
         app:layout_constraintTop_toBottomOf="@+id/seekBar_frequency" />
 
     <EditText
+        android:autofillHints="@string/enter_ip_address_last_three_digit"
         android:id="@+id/ev_remote_ip_address"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:ems="10"
+        android:ems="3"
         android:inputType="number"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        android:hint="@string/enter_ip_address_last_three_digit"
         app:layout_constraintTop_toBottomOf="@+id/bt_time_sync" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
