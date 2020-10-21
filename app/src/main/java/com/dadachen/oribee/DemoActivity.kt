@@ -18,12 +18,9 @@ class DemoActivity : AppCompatActivity() {
     private lateinit var sensorManager: SensorManager
     private var rotVSensor: Sensor? = null
     private var gameRotSensor:Sensor? = null
-    private lateinit var sharedPreferences: SharedPreferences
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        initSensor()
-
     }
 
     private val rotl = object : SensorEventListener {
@@ -78,9 +75,15 @@ class DemoActivity : AppCompatActivity() {
         super.onPause()
         sensorManager.unregisterListener(gameRotl)
         sensorManager.unregisterListener(rotl)
+        rotVSensor = null
+        gameRotSensor = null
     }
 
-
+//    override fun onStop() {
+//        super.onStop()
+//        sensorManager.unregisterListener(gameRotl)
+//        sensorManager.unregisterListener(rotl)
+//    }
 }
 
 

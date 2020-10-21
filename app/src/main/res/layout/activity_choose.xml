@@ -14,15 +14,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-            android:id="@+id/bt_end_record"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="@string/end_record"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/bt_start_record" />
 
     <SeekBar
             android:id="@+id/seekBar_frequency"
@@ -33,7 +24,7 @@
             app:layout_constraintStart_toStartOf="parent"
             android:max="200"
             android:progress="200"
-            app:layout_constraintTop_toBottomOf="@+id/bt_end_record" />
+            app:layout_constraintTop_toBottomOf="@+id/bt_start_record" />
 
     <TextView
             android:id="@+id/tv_freq"
@@ -44,7 +35,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@+id/seekBar_frequency"
-            app:layout_constraintTop_toBottomOf="@+id/bt_end_record" />
+            app:layout_constraintTop_toBottomOf="@+id/bt_start_record" />
 
     <Button
         android:id="@+id/bt_server_time"

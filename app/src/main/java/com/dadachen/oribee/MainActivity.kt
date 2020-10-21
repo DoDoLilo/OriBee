@@ -97,22 +97,20 @@ class MainActivity : AppCompatActivity() {
     }
     private val freq = "freq"
     @SuppressLint("SetTextI18n")
+    private var isStart = false
     private fun initView() {
-        bt_start_record.isEnabled = true
-        bt_end_record.isEnabled = false
         bt_start_record.setOnClickListener {
-            startRecord()
-            bt_end_record.isEnabled = true
-            bt_start_record.isEnabled = false
-            seekBar_frequency.isEnabled = false
+            if (!isStart) {
+                startRecord()
+                bt_start_record.text = getString(R.string.end_record)
+                seekBar_frequency.isEnabled = false
+            } else {
+                endRecord()
+                seekBar_frequency.isEnabled = true
+                bt_start_record.text = getString(R.string.start_record)
+            }
+            isStart = !isStart
         }
-        bt_end_record.setOnClickListener {
-            endRecord()
-            bt_start_record.isEnabled = true
-            bt_end_record.isEnabled = false
-            seekBar_frequency.isEnabled = true
-        }
-
         //seek bar and its display textView initialization
         seekBar_frequency.progress = sharedPreferences.getInt(freq,200)
         frequency = seekBar_frequency.progress
