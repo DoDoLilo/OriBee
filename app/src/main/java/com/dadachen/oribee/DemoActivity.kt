@@ -21,6 +21,12 @@ class DemoActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        tv_rot.apply {
+            text =  "${rotVector[0]}\n${rotVector[1]}\n${rotVector[2]}\n${rotVector[3]}"
+        }
+        tv_game.apply {
+            text = "${gameRot[0]}\n${gameRot[1]}\n${gameRot[2]}\n${gameRot[3]}"
+        }
     }
 
     private val rotl = object : SensorEventListener {
@@ -29,10 +35,9 @@ class DemoActivity : AppCompatActivity() {
             rotVector[1] = p0.values[1]
             rotVector[2] = p0.values[2]
             rotVector[3] = p0.values[3]
-            runOnUiThread {
-                tv_rot.text = "${rotVector[0]}\n${rotVector[1]}\n${rotVector[2]}\n${rotVector[3]}"
-
-            }
+//            runOnUiThread {
+//                tv_rot.text = "${rotVector[0]}\n${rotVector[1]}\n${rotVector[2]}\n${rotVector[3]}"
+//            }
         }
 
         override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
@@ -46,10 +51,9 @@ class DemoActivity : AppCompatActivity() {
             gameRot[2] = p0.values[2]
             gameRot[3] = p0.values[3]
 
-            runOnUiThread {
-                tv_game.text = "${gameRot[0]}\n${gameRot[1]}\n${gameRot[2]}\n${gameRot[3]}"
-
-            }
+//            runOnUiThread {
+//                tv_game.text = "${gameRot[0]}\n${gameRot[1]}\n${gameRot[2]}\n${gameRot[3]}"
+//            }
         }
 
         override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
@@ -79,11 +83,6 @@ class DemoActivity : AppCompatActivity() {
         gameRotSensor = null
     }
 
-//    override fun onStop() {
-//        super.onStop()
-//        sensorManager.unregisterListener(gameRotl)
-//        sensorManager.unregisterListener(rotl)
-//    }
 }
 
 
