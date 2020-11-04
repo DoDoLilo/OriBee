@@ -7,6 +7,7 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -34,8 +35,10 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_choose)
+
+
+
         sharedPreferences = getPreferences(Context.MODE_PRIVATE)
-//        initSensor()
         initView()
 
     }
@@ -86,7 +89,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-//        initSensor()
+        initSensor()
     }
 
     override fun onPause() {
@@ -103,37 +106,25 @@ class MainActivity : AppCompatActivity() {
             if (!isStart) {
                 startRecord()
                 bt_start_record.text = getString(R.string.end_record)
-                seekBar_frequency.isEnabled = false
             } else {
                 endRecord()
-                seekBar_frequency.isEnabled = true
                 bt_start_record.text = getString(R.string.start_record)
             }
             isStart = !isStart
         }
-        //seek bar and its display textView initialization
-        seekBar_frequency.progress = sharedPreferences.getInt(freq,200)
-        frequency = seekBar_frequency.progress
-        tv_freq.text = "$frequency Hz"
-        seekBar_frequency.incrementProgressBy(10)
-        seekBar_frequency.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
-            override fun onProgressChanged(p0: SeekBar?, p1: Int, p2: Boolean) {
-                tv_freq.text = "$p1 Hz"
-            }
-            override fun onStartTrackingTouch(p0: SeekBar?) {
 
-            }
-            override fun onStopTrackingTouch(p0: SeekBar?) {
-                val ff = p0?.progress?:200
-                frequency = ff
-                Utils.setValueBySharedPreference(sharedPreferences,freq,p0!!.progress)
-            }
-
-        })
         //init
 
         //init time sync ui
         initTimeSyncUI()
+        timeOffset = sharedPreferences.getInt("offset",0).toLong()
+        tv_offset_info.text="offset: $timeOffset"
+
+        //for obtaining data
+        personNumber = sharedPreferences.getInt("person", 0)
+        ev_person.setText(personNumber.toString())
+        countNumber = sharedPreferences.getInt("count", 0)
+        ev_count.setText(personNumber.toString())
     }
     private var timeOffset:Long = 0L
     @SuppressLint("SetTextI18n")
@@ -161,28 +152,36 @@ class MainActivity : AppCompatActivity() {
                 timeOffset =  remoteTime-localTime
                 bt_server_time.isEnabled = false
                 bt_server_time.visibility = View.INVISIBLE
-                tv_offset_info.text="remote time: $remoteTime\nlocal time: $localTime\noffset: $timeOffset"
+                tv_offset_info.text="offset: $timeOffset"
+                Utils.setValueBySharedPreference(sharedPreferences,"offset",timeOffset.toInt())
                 Log.d("time","offet: $timeOffset")
             }else{
                 Toast.makeText(this, "$ip is not valid", Toast.LENGTH_SHORT).show()
             }
         }
-
-
     }
+
+    private var personNumber = 0
+    private var countNumber = 0
 
     private var recording = false
     private val stringBuilder = StringBuilder()
     private var frequency = 200
     private fun startRecord() {
-        initSensor()
+//        initSensor()
         stringBuilder.clear()
         recording = true
+        personNumber = ev_person.text.toString().toInt()
+        countNumber = ev_count.text.toString().toInt()
+
+        Utils.setValueBySharedPreference(sharedPreferences,"person", personNumber)
+        Utils.setValueBySharedPreference(sharedPreferences, "count", countNumber)
+
         thread(start = true) {
             while (recording){
                 val content = "${System.currentTimeMillis()+timeOffset},${acc[0]},${acc[1]},${acc[2]},${gyro[0]},${gyro[1]},${gyro[2]},${rotVector[0]},${rotVector[1]},${rotVector[2]},${rotVector[3]}"
                 stringBuilder.appendLine(content)
-                Thread.sleep((1000/frequency).toLong())
+                Thread.sleep(5L)
             }
         }
     }
@@ -191,6 +190,9 @@ class MainActivity : AppCompatActivity() {
         sensorManager.unregisterListener(gyrol)
         sensorManager.unregisterListener(rotl)
         recording = false
-        writeToLocalStorage("$externalCacheDir/IMU-acc-gyro-rotv-${System.currentTimeMillis()}.csv",stringBuilder.toString())
+        val deviceName = Build.MODEL
+        Log.d("device","name is $deviceName")
+        Toast.makeText(this, "采集成功", Toast.LENGTH_SHORT).show()
+        writeToLocalStorage("$externalCacheDir/IMU-${personNumber}-${countNumber}-$deviceName.csv",stringBuilder.toString())
     }
 }
