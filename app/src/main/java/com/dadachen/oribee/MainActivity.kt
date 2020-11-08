@@ -183,9 +183,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
     private fun endRecord() {
-        sensorManager.unregisterListener(accl)
-        sensorManager.unregisterListener(gyrol)
-        sensorManager.unregisterListener(rotl)
         recording = false
         val deviceName = Build.MODEL
         Log.d("device","name is $deviceName")
