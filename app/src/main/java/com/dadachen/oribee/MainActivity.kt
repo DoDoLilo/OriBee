@@ -3,6 +3,7 @@ package com.dadachen.oribee
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
+import android.graphics.Color
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -12,10 +13,9 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.SeekBar
 import android.widget.Toast
-import androidx.core.view.isVisible
-import com.dadachen.magicorientation.utils.writeToLocalStorage
+import androidx.appcompat.app.AlertDialog
+import com.dadachen.oribee.utils.writeToLocalStorage
 import com.dadachen.oribee.time.getTimeByHttpClient
 import com.dadachen.oribee.time.runServer
 import com.dadachen.oribee.utils.Utils
@@ -40,11 +40,13 @@ class MainActivity : AppCompatActivity() {
 
     }
     private val rotl = object : SensorEventListener {
+        @SuppressLint("SetTextI18n")
         override fun onSensorChanged(p0: SensorEvent?) {
             rotVector[0] = p0!!.values[0]
             rotVector[1] = p0.values[1]
             rotVector[2] = p0.values[2]
             rotVector[3] = p0.values[3]
+            tv_rot_vector.text = "${rotVector[0]}\n${rotVector[1]}\n${rotVector[2]}\n${rotVector[3]}"
         }
 
         override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
@@ -100,14 +102,27 @@ class MainActivity : AppCompatActivity() {
     private var isStart = false
     private fun initView() {
         bt_start_record.setOnClickListener {
-            if (!isStart) {
-                startRecord()
-                bt_start_record.text = getString(R.string.end_record)
-            } else {
-                endRecord()
-                bt_start_record.text = getString(R.string.start_record)
-            }
-            isStart = !isStart
+            val dialog = let {
+                AlertDialog.Builder(this).apply {
+                    setTitle(if(!isStart) R.string.start_record else R.string.end_record)
+                    setPositiveButton(R.string.dialog_ok){ _, _ ->
+                        if (!isStart) {
+                            startRecord()
+                            bt_start_record.setBackgroundColor(Color.RED)
+                            bt_start_record.text = getString(R.string.end_record)
+                        } else {
+                            endRecord()
+                            bt_start_record.setBackgroundColor(Color.GRAY)
+
+                            bt_start_record.text = getString(R.string.start_record)
+                        }
+                        isStart = !isStart
+                    }
+                    setNegativeButton(R.string.dialog_cancel){ _, _ ->
+
+                    }
+                }.create()
+            }.show()
         }
 
         //init
@@ -173,7 +188,7 @@ class MainActivity : AppCompatActivity() {
 
         Utils.setValueBySharedPreference(sharedPreferences,"person", personNumber)
         Utils.setValueBySharedPreference(sharedPreferences, "count", countNumber)
-
+        Toast.makeText(this, "开始采集", Toast.LENGTH_SHORT).show()
         thread(start = true) {
             while (recording){
                 val content = "${System.currentTimeMillis()+timeOffset},${acc[0]},${acc[1]},${acc[2]},${gyro[0]},${gyro[1]},${gyro[2]},${rotVector[0]},${rotVector[1]},${rotVector[2]},${rotVector[3]}"
