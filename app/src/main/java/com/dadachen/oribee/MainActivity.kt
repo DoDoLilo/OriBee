@@ -180,7 +180,6 @@ class MainActivity : AppCompatActivity() {
     private val stringBuilder = StringBuilder()
     private var frequency = 200
     private fun startRecord() {
-//        initSensor()
         stringBuilder.clear()
         recording = true
         personNumber = ev_person.text.toString().toInt()
