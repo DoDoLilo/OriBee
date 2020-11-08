@@ -35,9 +35,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_choose)
-
-
-
         sharedPreferences = getPreferences(Context.MODE_PRIVATE)
         initView()
 
@@ -124,7 +121,7 @@ class MainActivity : AppCompatActivity() {
         personNumber = sharedPreferences.getInt("person", 0)
         ev_person.setText(personNumber.toString())
         countNumber = sharedPreferences.getInt("count", 0)
-        ev_count.setText(personNumber.toString())
+        ev_count.setText(countNumber.toString())
     }
     private var timeOffset:Long = 0L
     @SuppressLint("SetTextI18n")
