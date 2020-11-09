@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -13,29 +14,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-
-
-    <SeekBar
-            android:id="@+id/seekBar_frequency"
-            android:layout_width="177dp"
-            android:layout_height="16dp"
-            android:layout_marginTop="12dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            android:max="200"
-            android:progress="200"
-            app:layout_constraintTop_toBottomOf="@+id/bt_start_record" />
-
-    <TextView
-            android:id="@+id/tv_freq"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="@string/default_hz"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toEndOf="@+id/seekBar_frequency"
-            app:layout_constraintTop_toBottomOf="@+id/bt_start_record" />
 
     <Button
         android:id="@+id/bt_server_time"
@@ -59,12 +37,49 @@
 
     <TextView
         android:id="@+id/tv_local_ip_address"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_width="0dp"
+        android:layout_height="20dp"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+        android:gravity="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/seekBar_frequency" />
+        app:layout_constraintTop_toBottomOf="@+id/bt_start_record" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/bt_server_time"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/bt_start_record">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="人员序号:" />
+
+        <EditText
+            android:id="@+id/ev_person"
+            android:layout_width="40dp"
+            android:layout_height="match_parent"
+            android:inputType="number" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="次数:" />
+
+        <EditText
+            android:id="@+id/ev_count"
+            android:layout_width="40dp"
+            android:layout_height="match_parent"
+            android:inputType="number" />
+
+    </LinearLayout>
+
 
     <EditText
         android:autofillHints="@string/enter_ip_address_last_three_digit"
@@ -87,5 +102,26 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ev_remote_ip_address" />
+
+    <TextView
+        android:id="@+id/tv_rot_vector"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="36dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/tv_offset_info" />
+
+    <Button
+        android:id="@+id/bt_reset_sensor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/reset_sensors"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
