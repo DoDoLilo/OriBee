@@ -243,7 +243,7 @@ class MainActivity : AppCompatActivity() {
         initSensor()
     }
 
-    private fun checkAuth(activity: Activity?) {
+    private fun  checkAuth(activity: Activity?) {
         if (ContextCompat.checkSelfPermission(
                 activity!!,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
