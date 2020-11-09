@@ -101,6 +101,10 @@ class MainActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
+        stopSensor()
+    }
+
+    private fun stopSensor() {
         sensorManager.unregisterListener(accl)
         sensorManager.unregisterListener(gyrol)
         sensorManager.unregisterListener(rotl)
@@ -147,6 +151,22 @@ class MainActivity : AppCompatActivity() {
         ev_person.setText(personNumber.toString())
         countNumber = sharedPreferences.getInt("count", 0)
         ev_count.setText(countNumber.toString())
+
+
+        //init reset bt
+        bt_reset_sensor.setOnClickListener {
+            AlertDialog.Builder(this).apply {
+                setTitle("是否重置sensor")
+                setPositiveButton("重置") { _, _ ->
+                    stopSensor()
+                    initSensor()
+                    Toast.makeText(this@MainActivity, "重置成功", Toast.LENGTH_SHORT).show()
+                }
+                setNegativeButton("取消") { _, _ ->
+                    //do nothing
+                }
+            }.create().show()
+        }
     }
 
     private var timeOffset: Long = 0L
@@ -219,9 +239,11 @@ class MainActivity : AppCompatActivity() {
             "$externalCacheDir/IMU-${personNumber}-${countNumber}-$deviceName.csv",
             stringBuilder.toString()
         )
+        stopSensor()
+        initSensor()
     }
 
-    fun checkAuth(activity: Activity?) {
+    private fun checkAuth(activity: Activity?) {
         if (ContextCompat.checkSelfPermission(
                 activity!!,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
