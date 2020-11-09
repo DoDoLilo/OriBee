@@ -39,6 +39,7 @@ class MainActivity : AppCompatActivity() {
         initView()
 
     }
+
     private val rotl = object : SensorEventListener {
         @SuppressLint("SetTextI18n")
         override fun onSensorChanged(p0: SensorEvent?) {
@@ -46,7 +47,8 @@ class MainActivity : AppCompatActivity() {
             rotVector[1] = p0.values[1]
             rotVector[2] = p0.values[2]
             rotVector[3] = p0.values[3]
-            tv_rot_vector.text = "${rotVector[0]}\n${rotVector[1]}\n${rotVector[2]}\n${rotVector[3]}"
+            tv_rot_vector.text =
+                "${rotVector[0]}\n${rotVector[1]}\n${rotVector[2]}\n${rotVector[3]}"
         }
 
         override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
@@ -75,6 +77,7 @@ class MainActivity : AppCompatActivity() {
             Log.d("imu", "acc accuracy changed")
         }
     }
+
     private fun initSensor() {
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
         rotVSensor = sensorManager.getDefaultSensor(Sensor.TYPE_GAME_ROTATION_VECTOR)
@@ -97,38 +100,42 @@ class MainActivity : AppCompatActivity() {
         sensorManager.unregisterListener(gyrol)
         sensorManager.unregisterListener(rotl)
     }
+
     private val freq = "freq"
+
     @SuppressLint("SetTextI18n")
     private var isStart = false
+
+    @SuppressLint("SetTextI18n")
     private fun initView() {
         bt_start_record.setOnClickListener {
-                AlertDialog.Builder(this).apply {
-                    setTitle(if(!isStart) R.string.start_record else R.string.end_record)
-                    setPositiveButton(R.string.dialog_ok){ _, _ ->
-                        if (!isStart) {
-                            startRecord()
-                            bt_start_record.setBackgroundColor(Color.RED)
-                            bt_start_record.text = getString(R.string.end_record)
-                        } else {
-                            endRecord()
-                            bt_start_record.setBackgroundColor(Color.GRAY)
+            AlertDialog.Builder(this).apply {
+                setTitle(if (!isStart) R.string.start_record else R.string.end_record)
+                setPositiveButton(R.string.dialog_ok) { _, _ ->
+                    if (!isStart) {
+                        startRecord()
+                        bt_start_record.setBackgroundColor(Color.RED)
+                        bt_start_record.text = getString(R.string.end_record)
+                    } else {
+                        endRecord()
+                        bt_start_record.setBackgroundColor(Color.GRAY)
 
-                            bt_start_record.text = getString(R.string.start_record)
-                        }
-                        isStart = !isStart
+                        bt_start_record.text = getString(R.string.start_record)
                     }
-                    setNegativeButton(R.string.dialog_cancel){ _, _ ->
+                    isStart = !isStart
+                }
+                setNegativeButton(R.string.dialog_cancel) { _, _ ->
 
-                    }
-                }.create().show()
+                }
+            }.create().show()
         }
 
         //init
 
         //init time sync ui
         initTimeSyncUI()
-        timeOffset = sharedPreferences.getInt("offset",0).toLong()
-        tv_offset_info.text="offset: $timeOffset"
+        timeOffset = sharedPreferences.getInt("offset", 0).toLong()
+        tv_offset_info.text = "offset: $timeOffset"
 
         //for obtaining data
         personNumber = sharedPreferences.getInt("person", 0)
@@ -136,7 +143,9 @@ class MainActivity : AppCompatActivity() {
         countNumber = sharedPreferences.getInt("count", 0)
         ev_count.setText(countNumber.toString())
     }
-    private var timeOffset:Long = 0L
+
+    private var timeOffset: Long = 0L
+
     @SuppressLint("SetTextI18n")
     private fun initTimeSyncUI() {
         tv_local_ip_address.text = Utils.getIPAddress(true)
@@ -153,19 +162,19 @@ class MainActivity : AppCompatActivity() {
         }
         bt_time_sync.setOnClickListener {
             val num = ev_remote_ip_address.text.toString()
-            Utils.setValueBySharedPreference(sharedPreferences,"ipn",num)
-            ip = ip.substring(0,ip.indexOfLast{it=='.'}+1)
+            Utils.setValueBySharedPreference(sharedPreferences, "ipn", num)
+            ip = ip.substring(0, ip.indexOfLast { it == '.' } + 1)
             ip += ev_remote_ip_address.text.toString()
             if (Utils.isIP(ip)) {
                 val remoteTime = getTimeByHttpClient(ip)
                 val localTime = System.currentTimeMillis()
-                timeOffset =  remoteTime-localTime
+                timeOffset = remoteTime - localTime
                 bt_server_time.isEnabled = false
                 bt_server_time.visibility = View.INVISIBLE
-                tv_offset_info.text="offset: $timeOffset"
-                Utils.setValueBySharedPreference(sharedPreferences,"offset",timeOffset.toInt())
-                Log.d("time","offet: $timeOffset")
-            }else{
+                tv_offset_info.text = "offset: $timeOffset"
+                Utils.setValueBySharedPreference(sharedPreferences, "offset", timeOffset.toInt())
+                Log.d("time", "offet: $timeOffset")
+            } else {
                 Toast.makeText(this, "$ip is not valid", Toast.LENGTH_SHORT).show()
             }
         }
@@ -183,22 +192,27 @@ class MainActivity : AppCompatActivity() {
         personNumber = ev_person.text.toString().toInt()
         countNumber = ev_count.text.toString().toInt()
 
-        Utils.setValueBySharedPreference(sharedPreferences,"person", personNumber)
+        Utils.setValueBySharedPreference(sharedPreferences, "person", personNumber)
         Utils.setValueBySharedPreference(sharedPreferences, "count", countNumber)
         Toast.makeText(this, "开始采集", Toast.LENGTH_SHORT).show()
         thread(start = true) {
-            while (recording){
-                val content = "${System.currentTimeMillis()+timeOffset},${acc[0]},${acc[1]},${acc[2]},${gyro[0]},${gyro[1]},${gyro[2]},${rotVector[0]},${rotVector[1]},${rotVector[2]},${rotVector[3]}"
+            while (recording) {
+                val content =
+                    "${System.currentTimeMillis() + timeOffset},${acc[0]},${acc[1]},${acc[2]},${gyro[0]},${gyro[1]},${gyro[2]},${rotVector[0]},${rotVector[1]},${rotVector[2]},${rotVector[3]}"
                 stringBuilder.appendLine(content)
                 Thread.sleep(5L)
             }
         }
     }
+
     private fun endRecord() {
         recording = false
         val deviceName = Build.MODEL
-        Log.d("device","name is $deviceName")
+        Log.d("device", "name is $deviceName")
         Toast.makeText(this, "采集成功", Toast.LENGTH_SHORT).show()
-        writeToLocalStorage("$externalCacheDir/IMU-${personNumber}-${countNumber}-$deviceName.csv",stringBuilder.toString())
+        writeToLocalStorage(
+            "$externalCacheDir/IMU-${personNumber}-${countNumber}-$deviceName.csv",
+            stringBuilder.toString()
+        )
     }
 }
