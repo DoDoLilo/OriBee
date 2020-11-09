@@ -102,7 +102,6 @@ class MainActivity : AppCompatActivity() {
     private var isStart = false
     private fun initView() {
         bt_start_record.setOnClickListener {
-            val dialog = let {
                 AlertDialog.Builder(this).apply {
                     setTitle(if(!isStart) R.string.start_record else R.string.end_record)
                     setPositiveButton(R.string.dialog_ok){ _, _ ->
@@ -121,8 +120,7 @@ class MainActivity : AppCompatActivity() {
                     setNegativeButton(R.string.dialog_cancel){ _, _ ->
 
                     }
-                }.create()
-            }.show()
+                }.create().show()
         }
 
         //init
