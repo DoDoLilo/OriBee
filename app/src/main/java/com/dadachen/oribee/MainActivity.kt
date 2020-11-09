@@ -1,26 +1,30 @@
 package com.dadachen.oribee
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import com.dadachen.oribee.utils.writeToLocalStorage
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.dadachen.oribee.time.getTimeByHttpClient
 import com.dadachen.oribee.time.runServer
 import com.dadachen.oribee.utils.Utils
+import com.dadachen.oribee.utils.writeToLocalStorage
 import kotlinx.android.synthetic.main.activity_choose.*
-import java.lang.StringBuilder
 import kotlin.concurrent.thread
 
 class MainActivity : AppCompatActivity() {
@@ -37,6 +41,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_choose)
         sharedPreferences = getPreferences(Context.MODE_PRIVATE)
         initView()
+        checkAuth(this)
 
     }
 
@@ -214,5 +219,21 @@ class MainActivity : AppCompatActivity() {
             "$externalCacheDir/IMU-${personNumber}-${countNumber}-$deviceName.csv",
             stringBuilder.toString()
         )
+    }
+
+    fun checkAuth(activity: Activity?) {
+        if (ContextCompat.checkSelfPermission(
+                activity!!,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                activity, arrayOf(
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.ACCESS_WIFI_STATE,
+                    Manifest.permission.INTERNET
+                ), 1
+            )
+        }
     }
 }
