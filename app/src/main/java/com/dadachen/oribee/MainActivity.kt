@@ -160,7 +160,6 @@ class MainActivity : AppCompatActivity() {
                 setPositiveButton("重置") { _, _ ->
                     stopSensor()
                     initSensor()
-//                    Toast.makeText(this@MainActivity, "重置成功", Toast.LENGTH_SHORT).show()
                 }
                 setNegativeButton("取消") { _, _ ->
                     //do nothing
@@ -210,7 +209,6 @@ class MainActivity : AppCompatActivity() {
 
     private var recording = false
     private val stringBuilder = StringBuilder()
-    private var frequency = 200
     private fun startRecord() {
         stringBuilder.clear()
         recording = true
@@ -219,7 +217,6 @@ class MainActivity : AppCompatActivity() {
 
         Utils.setValueBySharedPreference(sharedPreferences, "person", personNumber)
         Utils.setValueBySharedPreference(sharedPreferences, "count", countNumber)
-//        Toast.makeText(this, "开始采集", Toast.LENGTH_SHORT).show()
         thread(start = true) {
             while (recording) {
                 val content =
