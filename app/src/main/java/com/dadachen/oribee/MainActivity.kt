@@ -29,12 +29,16 @@ import kotlin.concurrent.thread
 
 class MainActivity : AppCompatActivity() {
     private val gyro = FloatArray(3)
+    private val gyroC = FloatArray(3)
     private val acc = FloatArray(3)
     private val rotVector = FloatArray(4)
+    private val rotUVector = FloatArray(4)
     private lateinit var sensorManager: SensorManager
     private var rotVSensor: Sensor? = null
     private var accVSensor: Sensor? = null
     private var gyroVSensor: Sensor? = null
+    private var rotUVSensor:Sensor? = null
+    private var gyroVSensorC:Sensor? = null
     private lateinit var sharedPreferences: SharedPreferences
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,11 +64,35 @@ class MainActivity : AppCompatActivity() {
             Log.d("imu", "rot accuracy changed")
         }
     }
+    private val rotlU = object : SensorEventListener {
+        @SuppressLint("SetTextI18n")
+        override fun onSensorChanged(p0: SensorEvent?) {
+            rotUVector[0] = p0!!.values[0]
+            rotUVector[1] = p0.values[1]
+            rotUVector[2] = p0.values[2]
+            rotUVector[3] = p0.values[3]
+        }
+
+        override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
+            Log.d("imu", "rot accuracy changed")
+        }
+    }
     private val gyrol = object : SensorEventListener {
         override fun onSensorChanged(p0: SensorEvent?) {
             gyro[0] = p0!!.values[0]
             gyro[1] = p0.values[1]
             gyro[2] = p0.values[2]
+        }
+
+        override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
+            Log.d("imu", "gyro accuracy changed")
+        }
+    }
+    private val gyrolC = object : SensorEventListener {
+        override fun onSensorChanged(p0: SensorEvent?) {
+            gyroC[0] = p0!!.values[0]
+            gyroC[1] = p0.values[1]
+            gyroC[2] = p0.values[2]
         }
 
         override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
@@ -88,10 +116,14 @@ class MainActivity : AppCompatActivity() {
         rotVSensor = sensorManager.getDefaultSensor(Sensor.TYPE_GAME_ROTATION_VECTOR)
         accVSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
         gyroVSensor = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE_UNCALIBRATED)
+        gyroVSensorC = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE)
+        rotUVSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR)
 
         sensorManager.registerListener(rotl, rotVSensor, SensorManager.SENSOR_DELAY_FASTEST)
         sensorManager.registerListener(accl, accVSensor, SensorManager.SENSOR_DELAY_FASTEST)
         sensorManager.registerListener(gyrol, gyroVSensor, SensorManager.SENSOR_DELAY_FASTEST)
+        sensorManager.registerListener(gyrolC, gyroVSensorC, SensorManager.SENSOR_DELAY_FASTEST)
+        sensorManager.registerListener(rotlU, rotUVSensor, SensorManager.SENSOR_DELAY_FASTEST)
     }
 
     override fun onResume() {
@@ -108,6 +140,8 @@ class MainActivity : AppCompatActivity() {
         sensorManager.unregisterListener(accl)
         sensorManager.unregisterListener(gyrol)
         sensorManager.unregisterListener(rotl)
+        sensorManager.unregisterListener(gyrolC)
+        sensorManager.unregisterListener(rotlU)
     }
 
     private val freq = "freq"
