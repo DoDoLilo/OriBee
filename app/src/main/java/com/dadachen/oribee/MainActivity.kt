@@ -254,7 +254,7 @@ class MainActivity : AppCompatActivity() {
         thread(start = true) {
             while (recording) {
                 val content =
-                    "${System.currentTimeMillis() + timeOffset},${acc[0]},${acc[1]},${acc[2]},${gyro[0]},${gyro[1]},${gyro[2]},${rotVector[0]},${rotVector[1]},${rotVector[2]},${rotVector[3]}"
+                    "${System.currentTimeMillis() + timeOffset},${acc[0]},${acc[1]},${acc[2]},${gyro[0]},${gyro[1]},${gyro[2]},${rotVector[0]},${rotVector[1]},${rotVector[2]},${rotVector[3]},${rotUVector[0]},${rotUVector[1]},${rotUVector[2]},${rotUVector[3]},${gyroC[0]},${gyroC[1]},${gyroC[2]}"
                 stringBuilder.appendLine(content)
                 Thread.sleep(5L)
             }
