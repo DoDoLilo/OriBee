@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
     private val acc = FloatArray(3)
     private val rotVector = FloatArray(4)
     private val rotUVector = FloatArray(4)
-    private val orientaion = FloatArray(3)
+    private val orientation = FloatArray(3)
     private lateinit var sensorManager: SensorManager
     private var rotVSensor: Sensor? = null
     private var accVSensor: Sensor? = null
@@ -48,7 +48,10 @@ class MainActivity : AppCompatActivity() {
         sharedPreferences = getPreferences(Context.MODE_PRIVATE)
         initView()
         checkAuth(this)
-
+        sensorBee(getSystemService(Context.SENSOR_SERVICE) as SensorManager){
+            sensorTypes(arrayOf(1,1))
+            frequency = 200.0
+        }
     }
 
     private val rotl = object : SensorEventListener {
@@ -115,9 +118,9 @@ class MainActivity : AppCompatActivity() {
 
     private val orientationEventListener = object :SensorEventListener{
         override fun onSensorChanged(p0: SensorEvent?) {
-            orientaion[0] = p0!!.values[0]
-            orientaion[1] = p0!!.values[1]
-            orientaion[2] = p0!!.values[2]
+            orientation[0] = p0!!.values[0]
+            orientation[1] = p0!!.values[1]
+            orientation[2] = p0!!.values[2]
         }
 
         override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
@@ -272,7 +275,7 @@ class MainActivity : AppCompatActivity() {
         thread(start = true) {
             while (recording) {
                 val content =
-                    "${System.currentTimeMillis() + timeOffset},${acc[0]},${acc[1]},${acc[2]},${gyro[0]},${gyro[1]},${gyro[2]},${rotVector[0]},${rotVector[1]},${rotVector[2]},${rotVector[3]},${rotUVector[0]},${rotUVector[1]},${rotUVector[2]},${rotUVector[3]},${gyroC[0]},${gyroC[1]},${gyroC[2]},${orientaion[0]},${orientaion[1]},${orientaion[2]}"
+                    "${System.currentTimeMillis() + timeOffset},${acc[0]},${acc[1]},${acc[2]},${gyro[0]},${gyro[1]},${gyro[2]},${rotVector[0]},${rotVector[1]},${rotVector[2]},${rotVector[3]},${rotUVector[0]},${rotUVector[1]},${rotUVector[2]},${rotUVector[3]},${gyroC[0]},${gyroC[1]},${gyroC[2]},${orientation[0]},${orientation[1]},${orientation[2]}"
                 stringBuilder.appendLine(content)
                 Thread.sleep(5L)
             }
