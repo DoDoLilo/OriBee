@@ -1,4 +1,4 @@
-package com.dadachen.oribee
+package com.dadachen.oribee.sensor
 
 import android.hardware.Sensor
 import android.hardware.SensorEvent
@@ -7,16 +7,16 @@ import android.hardware.SensorManager
 import com.dadachen.oribee.utils.writeToLocalStorage
 import java.lang.StringBuilder
 import kotlin.concurrent.thread
-import kotlin.properties.Delegates
 
-fun sensorBee(sensorManager: SensorManager,init: SensorBee.()->Unit):SensorBee{
+fun sensorBee(sensorManager: SensorManager,init: SensorBee.()->Unit): SensorBee {
     val sensorBee = SensorBee(sensorManager)
     sensorBee.init()
     return sensorBee
 }
 class SensorBee(private val sensorManager: SensorManager){
-    var frequency:Double = 200.0
+    var frequency:Int = 200
     private val stringBuilder = StringBuilder()
+    private val filePath:String = ""
 
     fun sensorTypes(types:Array<Int>) {
         this.types = types
@@ -29,11 +29,19 @@ class SensorBee(private val sensorManager: SensorManager){
     private var status  = Status.STOPPING
     private lateinit var sensors:List<Sensor>
 
+    private fun List<FloatArray>.toCsvString():String{
+        return joinToString(",") { it.joinToString(",") }
+    }
+
+
     private fun start() {
         stringBuilder.clear()
         thread(start = true) {
-
-            Thread.sleep((1000/frequency).toLong())
+            while (status== Status.Running){
+                val d = "${System.currentTimeMillis()}, ${datas.toCsvString()}"
+                stringBuilder.appendLine(d)
+                Thread.sleep((1000/frequency).toLong())
+            }
         }
     }
 
@@ -72,12 +80,26 @@ class SensorBee(private val sensorManager: SensorManager){
             }
         }
         //register sensors
-        sensors.forEach {
+        sensors.forEachIndexed { index, sensor ->
+            sensorManager.registerListener(sensorListeners[index], sensor,SensorManager.SENSOR_DELAY_FASTEST)
+        }
+    }
+    fun resetSensors(){
+        unregisterSensors()
+        registerSensors()
+    }
 
+    fun stopSensors(){
+        unregisterSensors()
+    }
+
+    private fun unregisterSensors() {
+        sensorListeners.forEach {
+            sensorManager.unregisterListener(it)
         }
     }
 
-    fun stopRecordAndSave(filePath:String) {
+    fun stopRecordAndSave(filePath:String = this.filePath) {
         status = Status.STOPPING
         writeToLocalStorage(filePath, stringBuilder.toString())
     }

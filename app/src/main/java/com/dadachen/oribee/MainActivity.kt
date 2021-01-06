@@ -8,10 +8,7 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.hardware.Sensor
-import android.hardware.SensorEvent
-import android.hardware.SensorEventListener
 import android.hardware.SensorManager
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -20,155 +17,45 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.dadachen.oribee.sensor.SensorBee
+import com.dadachen.oribee.sensor.sensorBee
 import com.dadachen.oribee.time.getTimeByHttpClient
 import com.dadachen.oribee.time.runServer
 import com.dadachen.oribee.utils.Utils
-import com.dadachen.oribee.utils.writeToLocalStorage
 import kotlinx.android.synthetic.main.activity_choose.*
-import kotlin.concurrent.thread
 
 class MainActivity : AppCompatActivity() {
-    private val gyro = FloatArray(3)
-    private val gyroC = FloatArray(3)
-    private val acc = FloatArray(3)
-    private val rotVector = FloatArray(4)
-    private val rotUVector = FloatArray(4)
-    private val orientation = FloatArray(3)
-    private lateinit var sensorManager: SensorManager
-    private var rotVSensor: Sensor? = null
-    private var accVSensor: Sensor? = null
-    private var gyroVSensor: Sensor? = null
-    private var rotUVSensor:Sensor? = null
-    private var gyroVSensorC:Sensor? = null
-    private var orientationSensor:Sensor? = null
     private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var sensorBee: SensorBee
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_choose)
         sharedPreferences = getPreferences(Context.MODE_PRIVATE)
         initView()
         checkAuth(this)
-        sensorBee(getSystemService(Context.SENSOR_SERVICE) as SensorManager){
-            sensorTypes(arrayOf(1,1))
-            frequency = 200.0
+        sensorBee = sensorBee(sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager){
+            frequency = 200
+            sensorTypes(
+                arrayOf(
+                    Sensor.TYPE_ACCELEROMETER,
+                    Sensor.TYPE_GYROSCOPE,
+                    Sensor.TYPE_GAME_ROTATION_VECTOR,
+                    Sensor.TYPE_ROTATION_VECTOR,
+                    Sensor.TYPE_GYROSCOPE_UNCALIBRATED
+            ))
         }
     }
 
-    private val rotl = object : SensorEventListener {
-        @SuppressLint("SetTextI18n")
-        override fun onSensorChanged(p0: SensorEvent?) {
-            rotVector[0] = p0!!.values[0]
-            rotVector[1] = p0.values[1]
-            rotVector[2] = p0.values[2]
-            rotVector[3] = p0.values[3]
-            tv_rot_vector.text =
-                "${rotVector[0]}\n${rotVector[1]}\n${rotVector[2]}\n${rotVector[3]}"
-        }
-
-        override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
-            Log.d("imu", "rot accuracy changed")
-        }
-    }
-    private val rotlU = object : SensorEventListener {
-        @SuppressLint("SetTextI18n")
-        override fun onSensorChanged(p0: SensorEvent?) {
-            rotUVector[0] = p0!!.values[0]
-            rotUVector[1] = p0.values[1]
-            rotUVector[2] = p0.values[2]
-            rotUVector[3] = p0.values[3]
-        }
-
-        override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
-            Log.d("imu", "rot accuracy changed")
-        }
-    }
-    private val gyrol = object : SensorEventListener {
-        override fun onSensorChanged(p0: SensorEvent?) {
-            gyro[0] = p0!!.values[0]
-            gyro[1] = p0.values[1]
-            gyro[2] = p0.values[2]
-        }
-
-        override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
-            Log.d("imu", "gyro accuracy changed")
-        }
-    }
-    private val gyrolC = object : SensorEventListener {
-        override fun onSensorChanged(p0: SensorEvent?) {
-            gyroC[0] = p0!!.values[0]
-            gyroC[1] = p0.values[1]
-            gyroC[2] = p0.values[2]
-        }
-
-        override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
-            Log.d("imu", "gyro accuracy changed")
-        }
-    }
-    private val accl = object : SensorEventListener {
-        override fun onSensorChanged(p0: SensorEvent?) {
-            acc[0] = p0!!.values[0]
-            acc[1] = p0.values[1]
-            acc[2] = p0.values[2]
-        }
-
-        override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
-            Log.d("imu", "acc accuracy changed")
-        }
-    }
-
-    private val orientationEventListener = object :SensorEventListener{
-        override fun onSensorChanged(p0: SensorEvent?) {
-            orientation[0] = p0!!.values[0]
-            orientation[1] = p0!!.values[1]
-            orientation[2] = p0!!.values[2]
-        }
-
-        override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
-            Log.d("orientation","orientation accuracy changed")
-        }
-
-    }
-
-    private fun initSensor() {
-        sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
-        rotVSensor = sensorManager.getDefaultSensor(Sensor.TYPE_GAME_ROTATION_VECTOR)
-        accVSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
-        gyroVSensor = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE_UNCALIBRATED)
-        gyroVSensorC = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE)
-        rotUVSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR)
-        orientationSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION)
-
-        sensorManager.registerListener(rotl, rotVSensor, SensorManager.SENSOR_DELAY_FASTEST)
-        sensorManager.registerListener(accl, accVSensor, SensorManager.SENSOR_DELAY_FASTEST)
-        sensorManager.registerListener(gyrol, gyroVSensor, SensorManager.SENSOR_DELAY_FASTEST)
-        sensorManager.registerListener(gyrolC, gyroVSensorC, SensorManager.SENSOR_DELAY_FASTEST)
-        sensorManager.registerListener(rotlU, rotUVSensor, SensorManager.SENSOR_DELAY_FASTEST)
-        sensorManager.registerListener(orientationEventListener, orientationSensor, SensorManager.SENSOR_DELAY_FASTEST)
-    }
-
-    override fun onResume() {
-        super.onResume()
-        initSensor()
-    }
 
     override fun onPause() {
         super.onPause()
-        stopSensor()
+        sensorBee.stopSensors()
     }
 
-    private fun stopSensor() {
-        sensorManager.unregisterListener(accl)
-        sensorManager.unregisterListener(gyrol)
-        sensorManager.unregisterListener(rotl)
-        sensorManager.unregisterListener(gyrolC)
-        sensorManager.unregisterListener(rotlU)
-        sensorManager.unregisterListener(orientationEventListener)
-    }
+
 
     private val freq = "freq"
-
-    @SuppressLint("SetTextI18n")
-    private var isStart = false
+    private val isStart = false
 
     @SuppressLint("SetTextI18n")
     private fun initView() {
@@ -177,16 +64,15 @@ class MainActivity : AppCompatActivity() {
                 setTitle(if (!isStart) R.string.start_record else R.string.end_record)
                 setPositiveButton(R.string.dialog_ok) { _, _ ->
                     if (!isStart) {
-                        startRecord()
+                        sensorBee.startRecord()
                         bt_start_record.setBackgroundColor(Color.RED)
                         bt_start_record.text = getString(R.string.end_record)
                     } else {
-                        endRecord()
+                        sensorBee.stopRecordAndSave("${externalCacheDir}/IMU-${personNumber}-$countNumber.csv")
                         bt_start_record.setBackgroundColor(Color.GRAY)
 
                         bt_start_record.text = getString(R.string.start_record)
                     }
-                    isStart = !isStart
                 }
                 setNegativeButton(R.string.dialog_cancel) { _, _ ->
 
@@ -213,8 +99,7 @@ class MainActivity : AppCompatActivity() {
             AlertDialog.Builder(this).apply {
                 setTitle("是否重置sensor")
                 setPositiveButton("重置") { _, _ ->
-                    stopSensor()
-                    initSensor()
+                    sensorBee.resetSensors()
                 }
                 setNegativeButton("取消") { _, _ ->
                     //do nothing
@@ -262,38 +147,9 @@ class MainActivity : AppCompatActivity() {
     private var personNumber = 0
     private var countNumber = 0
 
-    private var recording = false
-    private val stringBuilder = StringBuilder()
-    private fun startRecord() {
-        stringBuilder.clear()
-        recording = true
-        personNumber = ev_person.text.toString().toInt()
-        countNumber = ev_count.text.toString().toInt()
 
-        Utils.setValueBySharedPreference(sharedPreferences, "person", personNumber)
-        Utils.setValueBySharedPreference(sharedPreferences, "count", countNumber)
-        thread(start = true) {
-            while (recording) {
-                val content =
-                    "${System.currentTimeMillis() + timeOffset},${acc[0]},${acc[1]},${acc[2]},${gyro[0]},${gyro[1]},${gyro[2]},${rotVector[0]},${rotVector[1]},${rotVector[2]},${rotVector[3]},${rotUVector[0]},${rotUVector[1]},${rotUVector[2]},${rotUVector[3]},${gyroC[0]},${gyroC[1]},${gyroC[2]},${orientation[0]},${orientation[1]},${orientation[2]}"
-                stringBuilder.appendLine(content)
-                Thread.sleep(5L)
-            }
-        }
-    }
 
-    private fun endRecord() {
-        recording = false
-        val deviceName = Build.MODEL
-        Log.d("device", "name is $deviceName")
-        Toast.makeText(this, "采集成功", Toast.LENGTH_SHORT).show()
-        writeToLocalStorage(
-            "$externalCacheDir/IMU-${personNumber}-${countNumber}-$deviceName.csv",
-            stringBuilder.toString()
-        )
-        stopSensor()
-        initSensor()
-    }
+
 
     private fun  checkAuth(activity: Activity?) {
         if (ContextCompat.checkSelfPermission(
