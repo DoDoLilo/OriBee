@@ -46,7 +46,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
     override fun onPause() {
         super.onPause()
         sensorBee.stopSensors()
@@ -146,9 +145,6 @@ class MainActivity : AppCompatActivity() {
 
     private var personNumber = 0
     private var countNumber = 0
-
-
-
 
 
     private fun  checkAuth(activity: Activity?) {
