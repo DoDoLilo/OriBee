@@ -9,6 +9,7 @@ import android.content.pm.PackageManager
 import android.graphics.Color
 import android.hardware.Sensor
 import android.hardware.SensorManager
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -17,6 +18,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.edit
 import com.dadachen.oribee.sensor.SensorBee
 import com.dadachen.oribee.sensor.sensorBee
 import com.dadachen.oribee.time.getTimeByHttpClient
@@ -42,9 +44,18 @@ class MainActivity : AppCompatActivity() {
                     Sensor.TYPE_GAME_ROTATION_VECTOR,
                     Sensor.TYPE_ROTATION_VECTOR,
                     Sensor.TYPE_GYROSCOPE_UNCALIBRATED,
-                    Sensor.TYPE_MAGNETIC_FIELD
+                    Sensor.TYPE_MAGNETIC_FIELD,
+                    Sensor.TYPE_GRAVITY,
+                    Sensor.TYPE_LINEAR_ACCELERATION
             ))
             registerSensors()
+
+            addDataChangedListener {
+                runOnUiThread {
+                    //note the order and the value location should depend on the sensor types defined above
+                    tv_rotation_vector_4.text = it[2][3].toString()
+                }
+            }
         }
     }
 
@@ -58,7 +69,7 @@ class MainActivity : AppCompatActivity() {
     private val freq = "freq"
     private var isStart = false
 
-    @SuppressLint("SetTextI18n")
+    @SuppressLint("CommitPrefEdits", "SetTextI18n")
     private fun initView() {
         bt_start_record.setOnClickListener {
             AlertDialog.Builder(this).apply {
@@ -68,9 +79,12 @@ class MainActivity : AppCompatActivity() {
                         sensorBee.startRecord()
                         bt_start_record.setBackgroundColor(Color.RED)
                         bt_start_record.text = getString(R.string.end_record)
+                        personNumber = ev_person.text.toString().toInt()
+                        countNumber = ev_count.text.toString().toInt()
+                        sharedPreferences.edit().putInt("person", personNumber).putInt("count", countNumber)
                         isStart = true
                     } else {
-                        sensorBee.stopRecordAndSave("${externalCacheDir}/IMU-${personNumber}-$countNumber.csv")
+                        sensorBee.stopRecordAndSave("${externalCacheDir}/IMU-${personNumber}-$countNumber ${Build.MODEL}.csv")
                         bt_start_record.setBackgroundColor(Color.GRAY)
                         isStart = false
                         bt_start_record.text = getString(R.string.start_record)
