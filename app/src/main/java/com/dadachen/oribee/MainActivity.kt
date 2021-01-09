@@ -41,8 +41,10 @@ class MainActivity : AppCompatActivity() {
                     Sensor.TYPE_GYROSCOPE,
                     Sensor.TYPE_GAME_ROTATION_VECTOR,
                     Sensor.TYPE_ROTATION_VECTOR,
-                    Sensor.TYPE_GYROSCOPE_UNCALIBRATED
+                    Sensor.TYPE_GYROSCOPE_UNCALIBRATED,
+                    Sensor.TYPE_MAGNETIC_FIELD
             ))
+            registerSensors()
         }
     }
 
@@ -54,7 +56,7 @@ class MainActivity : AppCompatActivity() {
 
 
     private val freq = "freq"
-    private val isStart = false
+    private var isStart = false
 
     @SuppressLint("SetTextI18n")
     private fun initView() {
@@ -66,10 +68,11 @@ class MainActivity : AppCompatActivity() {
                         sensorBee.startRecord()
                         bt_start_record.setBackgroundColor(Color.RED)
                         bt_start_record.text = getString(R.string.end_record)
+                        isStart = true
                     } else {
                         sensorBee.stopRecordAndSave("${externalCacheDir}/IMU-${personNumber}-$countNumber.csv")
                         bt_start_record.setBackgroundColor(Color.GRAY)
-
+                        isStart = false
                         bt_start_record.text = getString(R.string.start_record)
                     }
                 }

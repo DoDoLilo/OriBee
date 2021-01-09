@@ -52,14 +52,13 @@ class SensorBee(private val sensorManager: SensorManager){
 
     fun startRecord() {
         status = Status.Running
-        registerSensors()
         start()
     }
 
     private lateinit var sensorListeners:List<SensorEventListener>
     private lateinit var datas:List<FloatArray>
 
-    private fun registerSensors() {
+    fun registerSensors() {
         datas = sensors.map {
             when(it.type){
                 Sensor.TYPE_ROTATION_VECTOR -> FloatArray(4)
