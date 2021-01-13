@@ -59,12 +59,16 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onPause() {
-        super.onPause()
-        sensorBee.stopSensors()
-    }
 
-
+//    override fun onStop() {
+//        super.onStop()
+//        sensorBee.stopSensors()
+//    }
+//
+//    override fun onResume() {
+//        super.onResume()
+//        sensorBee.registerSensors()
+//    }
 
     private val freq = "freq"
     private var isStart = false

@@ -4,6 +4,7 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.util.Log
 import com.dadachen.oribee.utils.writeToLocalStorage
 import java.lang.StringBuilder
 import kotlin.concurrent.thread
@@ -47,6 +48,7 @@ class SensorBee(private val sensorManager: SensorManager) {
         thread(start = true) {
             while (status == Status.Running) {
                 val d = "${System.currentTimeMillis()}, ${datas.toCsvString()}"
+                Log.d("sensor",d)
                 stringBuilder.appendLine(d)
                 Thread.sleep((1000 / frequency).toLong())
             }
@@ -60,6 +62,7 @@ class SensorBee(private val sensorManager: SensorManager) {
 
     fun startRecord() {
         status = Status.Running
+
         start()
     }
 
@@ -117,5 +120,7 @@ class SensorBee(private val sensorManager: SensorManager) {
         status = Status.STOPPING
         writeToLocalStorage(filePath, stringBuilder.toString())
     }
+
+
 
 }
