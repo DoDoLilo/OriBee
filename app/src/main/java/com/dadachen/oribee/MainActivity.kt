@@ -75,7 +75,7 @@ class MainActivity : AppCompatActivity() {
                         bt_start_record.text = getString(R.string.end_record)
                         personNumber = ev_person.text.toString().toInt()
                         countNumber = ev_count.text.toString().toInt()
-                        sharedPreferences.edit().putInt("person", personNumber).putInt("count", countNumber).commit()
+                        sharedPreferences.edit().putInt("person", personNumber).putInt("count", countNumber).apply()
                         isStart = true
                     } else {
                         sensorBee.stopRecordAndSave("${externalCacheDir}/IMU-${personNumber}-$countNumber ${Build.MODEL}.csv")
