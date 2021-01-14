@@ -18,7 +18,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.content.edit
 import com.dadachen.oribee.sensor.SensorBee
 import com.dadachen.oribee.sensor.sensorBee
 import com.dadachen.oribee.time.getTimeByHttpClient
@@ -44,6 +43,7 @@ class MainActivity : AppCompatActivity() {
                     Sensor.TYPE_GAME_ROTATION_VECTOR,
                     Sensor.TYPE_ROTATION_VECTOR,
                     Sensor.TYPE_GYROSCOPE_UNCALIBRATED,
+                    Sensor.TYPE_ORIENTATION,
                     Sensor.TYPE_MAGNETIC_FIELD,
                     Sensor.TYPE_GRAVITY,
                     Sensor.TYPE_LINEAR_ACCELERATION
@@ -59,16 +59,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
-//    override fun onStop() {
-//        super.onStop()
-//        sensorBee.stopSensors()
-//    }
-//
-//    override fun onResume() {
-//        super.onResume()
-//        sensorBee.registerSensors()
-//    }
 
     private val freq = "freq"
     private var isStart = false
@@ -182,5 +172,10 @@ class MainActivity : AppCompatActivity() {
                 ), 1
             )
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        sensorBee.stopSensors()
     }
 }
