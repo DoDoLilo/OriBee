@@ -60,7 +60,6 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    private val freq = "freq"
     private var isStart = false
 
     @SuppressLint("CommitPrefEdits", "SetTextI18n")
