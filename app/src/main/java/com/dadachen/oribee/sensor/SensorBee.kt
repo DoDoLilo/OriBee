@@ -19,7 +19,7 @@ class SensorBee(private val sensorManager: SensorManager) {
     var frequency: Int = 200
     private val stringBuilder = StringBuilder()
     private val filePath: String = ""
-
+    var offset = 0L
     fun sensorTypes(types: Array<Int>) {
         this.types = types
         sensors = types.map {
@@ -47,7 +47,7 @@ class SensorBee(private val sensorManager: SensorManager) {
         stringBuilder.clear()
         thread(start = true) {
             while (status == Status.Running) {
-                val d = "${System.currentTimeMillis()}, ${datas.toCsvString()}"
+                val d = "${System.currentTimeMillis() + offset}, ${datas.toCsvString()}"
                 Log.d("sensor",d)
                 stringBuilder.appendLine(d)
                 Thread.sleep((1000 / frequency).toLong())
@@ -60,9 +60,9 @@ class SensorBee(private val sensorManager: SensorManager) {
         STOPPING
     }
 
-    fun startRecord() {
+    fun startRecord(offset:Long) {
         status = Status.Running
-
+        this.offset = offset
         start()
     }
 
