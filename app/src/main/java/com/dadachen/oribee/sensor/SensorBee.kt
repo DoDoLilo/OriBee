@@ -19,13 +19,14 @@ class SensorBee(private val sensorManager: SensorManager) {
     var frequency: Int = 200
     private val stringBuilder = StringBuilder()
     private val filePath: String = ""
-    var headingAngles:Double = 0.0
+    var headingAngles: Double = 0.0
     var offset = 0L
     fun sensorTypes(types: Array<Int>) {
         this.types = types
         sensors = types.map {
             sensorManager.getDefaultSensor(it)
         }
+        statusMask = Array(types.size) { false }
     }
 
     private var types: Array<Int>? = null
@@ -49,7 +50,7 @@ class SensorBee(private val sensorManager: SensorManager) {
         thread(start = true) {
             while (status == Status.Running) {
                 val d = "${System.currentTimeMillis() + offset}, ${datas.toCsvString()}"
-                Log.d("sensor",d)
+                Log.d("sensor", d)
                 stringBuilder.appendLine(d)
                 Thread.sleep((1000 / frequency).toLong())
             }
@@ -61,7 +62,7 @@ class SensorBee(private val sensorManager: SensorManager) {
         STOPPING
     }
 
-    fun startRecord(offset:Long) {
+    fun startRecord(offset: Long) {
         status = Status.Running
         this.offset = offset
         start()
@@ -86,13 +87,16 @@ class SensorBee(private val sensorManager: SensorManager) {
                         item[i] = p0!!.values[i]
                     }
                     dataChangedListener?.let { it(datas) }
-                    val rot = FloatArray(9)
-                    val value = FloatArray(4)
-                    SensorManager.getRotationMatrix(rot, null, datas[0], datas[6])
-                    SensorManager.getOrientation(rot, value)
-                    headingAngles = Math.toDegrees(value[0].toDouble())
-                    if (headingAngles < 0) {
-                        headingAngles += 360
+
+                    //change mask to present the specific sensor ready
+                    statusMask[index] = true
+                    //only execute following if clause, when just registering Mag (index==6)
+                    if (!isRegistered && statusMask[getIndexFromSensorType(Sensor.TYPE_MAGNETIC_FIELD)] && statusMask[getIndexFromSensorType(
+                            Sensor.TYPE_ACCELEROMETER
+                        )]
+                    ) {
+                        calculateHeadingAngles()
+                        isRegistered = true
                     }
                 }
 
@@ -110,6 +114,24 @@ class SensorBee(private val sensorManager: SensorManager) {
         }
     }
 
+    private fun calculateHeadingAngles() {
+        val rot = FloatArray(9)
+        val value = FloatArray(4)
+        SensorManager.getRotationMatrix(
+            rot,
+            null,
+            datas.getDataFromSensorType(Sensor.TYPE_ACCELEROMETER),
+            datas.getDataFromSensorType(Sensor.TYPE_MAGNETIC_FIELD)
+        )
+        SensorManager.getOrientation(rot, value)
+        headingAngles = Math.toDegrees(value[0].toDouble())
+        if (headingAngles < 0) {
+            headingAngles += 360
+        }
+    }
+
+    private var isRegistered = false
+    private lateinit var statusMask: Array<Boolean>
     fun resetSensors() {
         unregisterSensors()
         registerSensors()
@@ -123,6 +145,8 @@ class SensorBee(private val sensorManager: SensorManager) {
         sensorListeners.forEach {
             sensorManager.unregisterListener(it)
         }
+        isRegistered = false
+        statusMask.fill(false)
     }
 
     fun stopRecordAndSave(filePath: String = this.filePath) {
@@ -130,6 +154,14 @@ class SensorBee(private val sensorManager: SensorManager) {
         writeToLocalStorage(filePath, stringBuilder.toString())
     }
 
+
+    private fun List<FloatArray>.getDataFromSensorType(type: Int): FloatArray {
+        return this[getIndexFromSensorType(type)];
+    }
+
+    private inline fun getIndexFromSensorType(type: Int): Int {
+        return types?.indexOf(type) ?: -1
+    }
 
 
 }
