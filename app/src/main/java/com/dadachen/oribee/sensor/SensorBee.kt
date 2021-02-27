@@ -90,7 +90,7 @@ class SensorBee(private val sensorManager: SensorManager) {
 
                     //change mask to present the specific sensor ready
                     statusMask[index] = true
-                    //only execute following if clause, when just registering Mag (index==6)
+                    //only execute following if clause, when just registering Mag and acc
                     if (!isRegistered && statusMask[getIndexFromSensorType(Sensor.TYPE_MAGNETIC_FIELD)] && statusMask[getIndexFromSensorType(
                             Sensor.TYPE_ACCELEROMETER
                         )]
