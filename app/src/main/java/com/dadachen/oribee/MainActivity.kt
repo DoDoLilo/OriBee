@@ -53,7 +53,7 @@ class MainActivity : AppCompatActivity() {
             addDataChangedListener {
                 runOnUiThread {
                     //note the order and the value location should depend on the sensor types defined above
-                    tv_rotation_vector_4.text = it[2][3].toString()
+                    tv_rotation_vector_4.text = "${it[2][3]}\n${sensorBee.headingAngles}"
                 }
             }
         }
