@@ -79,7 +79,7 @@ class SensorBee(private val sensorManager: SensorManager) {
                 else -> FloatArray(3)
             }
         }
-        sensorListeners = sensors.mapIndexed { index, sensor ->
+        sensorListeners = sensors.mapIndexed { index, _ ->
             object : SensorEventListener {
                 override fun onSensorChanged(p0: SensorEvent?) {
                     val item = datas[index]
@@ -156,10 +156,10 @@ class SensorBee(private val sensorManager: SensorManager) {
 
 
     private fun List<FloatArray>.getDataFromSensorType(type: Int): FloatArray {
-        return this[getIndexFromSensorType(type)];
+        return this[getIndexFromSensorType(type)]
     }
 
-    private inline fun getIndexFromSensorType(type: Int): Int {
+    private fun getIndexFromSensorType(type: Int): Int {
         return types?.indexOf(type) ?: -1
     }
 
