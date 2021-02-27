@@ -78,7 +78,7 @@ class MainActivity : AppCompatActivity() {
                         sharedPreferences.edit().putInt("person", personNumber).putInt("count", countNumber).apply()
                         isStart = true
                     } else {
-                        sensorBee.stopRecordAndSave("${externalCacheDir}/IMU-${personNumber}-$countNumber ${Build.MODEL}.csv")
+                        sensorBee.stopRecordAndSave("${externalCacheDir}/IMU-${personNumber}-$countNumber-${sensorBee.headingAngles} ${Build.MODEL}.csv")
                         bt_start_record.setBackgroundColor(Color.GRAY)
                         isStart = false
                         bt_start_record.text = getString(R.string.start_record)

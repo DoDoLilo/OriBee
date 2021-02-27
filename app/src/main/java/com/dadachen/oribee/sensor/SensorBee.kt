@@ -19,6 +19,7 @@ class SensorBee(private val sensorManager: SensorManager) {
     var frequency: Int = 200
     private val stringBuilder = StringBuilder()
     private val filePath: String = ""
+    var headingAngles:Double = 0.0
     var offset = 0L
     fun sensorTypes(types: Array<Int>) {
         this.types = types
@@ -85,6 +86,14 @@ class SensorBee(private val sensorManager: SensorManager) {
                         item[i] = p0!!.values[i]
                     }
                     dataChangedListener?.let { it(datas) }
+                    val rot = FloatArray(9)
+                    val value = FloatArray(4)
+                    SensorManager.getRotationMatrix(rot, null, datas[0], datas[6])
+                    SensorManager.getOrientation(rot, value)
+                    headingAngles = Math.toDegrees(value[0].toDouble())
+                    if (headingAngles < 0) {
+                        headingAngles += 360
+                    }
                 }
 
                 override fun onAccuracyChanged(p0: Sensor?, p1: Int) {
