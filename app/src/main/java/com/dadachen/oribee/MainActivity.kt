@@ -18,6 +18,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.dadachen.oribee.scan.ScanConfig
+import com.dadachen.oribee.scan.WifiScanManager
 import com.dadachen.oribee.sensor.SensorBee
 import com.dadachen.oribee.sensor.sensorBee
 import com.dadachen.oribee.time.getTimeByHttpClient
@@ -28,6 +30,7 @@ import kotlinx.android.synthetic.main.activity_choose.*
 class MainActivity : AppCompatActivity() {
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var sensorBee: SensorBee
+    private val wifiScanManager = WifiScanManager(this, ScanConfig("jy","2"))
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_choose)
@@ -69,7 +72,7 @@ class MainActivity : AppCompatActivity() {
                 setTitle(if (!isStart) R.string.start_record else R.string.end_record)
                 setPositiveButton(R.string.dialog_ok) { _, _ ->
                     if (!isStart) {
-
+                        wifiScanManager.start()
                         sensorBee.startRecord(timeOffset)
                         bt_start_record.setBackgroundColor(Color.RED)
                         bt_start_record.text = getString(R.string.end_record)
@@ -78,6 +81,7 @@ class MainActivity : AppCompatActivity() {
                         sharedPreferences.edit().putInt("person", personNumber).putInt("count", countNumber).apply()
                         isStart = true
                     } else {
+                        wifiScanManager.stop()
                         sensorBee.stopRecordAndSave("${externalCacheDir}/IMU-${personNumber}-$countNumber-${sensorBee.headingAngles} ${Build.MODEL}.csv")
                         bt_start_record.setBackgroundColor(Color.GRAY)
                         isStart = false
