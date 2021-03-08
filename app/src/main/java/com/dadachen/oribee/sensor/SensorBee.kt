@@ -70,9 +70,9 @@ class SensorBee(private val sensorManager: SensorManager) {
         )
         SensorManager.getOrientation(rot, value)
         datas.getDataFromSensorType(Sensor.TYPE_ORIENTATION).apply {
-            this[0] = value[0]
-            this[1] = value[1]
-            this[2] = value[2]
+            this[0] = Math.toDegrees(value[0].toDouble()).toFloat()
+            this[1] = Math.toDegrees(value[1].toDouble()).toFloat()
+            this[2] = Math.toDegrees(value[2].toDouble()).toFloat()
         }
     }
 
