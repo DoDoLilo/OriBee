@@ -30,7 +30,7 @@ import kotlinx.android.synthetic.main.activity_choose.*
 class MainActivity : AppCompatActivity() {
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var sensorBee: SensorBee
-    private val wifiScanManager = WifiScanManager(this, ScanConfig("jy","2"))
+    private lateinit var wifiScanManager:WifiScanManager
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_choose)
@@ -60,6 +60,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+        wifiScanManager = WifiScanManager(this, ScanConfig("jy","2"))
     }
 
 

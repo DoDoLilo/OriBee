@@ -74,7 +74,7 @@ class WifiScanManager(context: Context, scanConfig: ScanConfig) : ScanManager(co
     override fun stop() {
         super.stop()
         context.unregisterReceiver(wifiScanReceiver)
-        writeToLocalStorage("${context.externalCacheDir}/${scanConfig.buildingName}/floor_${scanConfig.floor}/WIFIlinescan.json", wifiScanData)
+        writeToLocalStorage("${context.externalCacheDir}/${scanConfig.buildingName}/floor_${scanConfig.floor}/WIFIlinescan-${System.currentTimeMillis()}.json", wifiScanData)
     }
 
     override fun getCount(): Int {

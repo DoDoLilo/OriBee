@@ -49,11 +49,30 @@ class SensorBee(private val sensorManager: SensorManager) {
         stringBuilder.clear()
         thread(start = true) {
             while (status == Status.Running) {
+                postProcessOrientation()
+                //note post process must run before generating data string d.
                 val d = "${System.currentTimeMillis() + offset}, ${datas.toCsvString()}"
                 Log.d("sensor", d)
                 stringBuilder.appendLine(d)
                 Thread.sleep((1000 / frequency).toLong())
             }
+        }
+    }
+
+    private fun postProcessOrientation() {
+        val rot = FloatArray(9)
+        val value = FloatArray(3)
+        SensorManager.getRotationMatrix(
+            rot,
+            null,
+            datas.getDataFromSensorType(Sensor.TYPE_ACCELEROMETER),
+            datas.getDataFromSensorType(Sensor.TYPE_MAGNETIC_FIELD)
+        )
+        SensorManager.getOrientation(rot, value)
+        datas.getDataFromSensorType(Sensor.TYPE_ORIENTATION).apply {
+            this[0] = value[0]
+            this[1] = value[1]
+            this[2] = value[2]
         }
     }
 
@@ -116,7 +135,7 @@ class SensorBee(private val sensorManager: SensorManager) {
 
     private fun calculateHeadingAngles() {
         val rot = FloatArray(9)
-        val value = FloatArray(4)
+        val value = FloatArray(3)
         SensorManager.getRotationMatrix(
             rot,
             null,
