@@ -12,10 +12,9 @@ abstract class ScanManager(val context: Context, val scanConfig: ScanConfig) {
     }
 
     abstract fun start()
-    open fun stop() {
-        running = true
-    }
+
     abstract fun getCount():Int
+    abstract fun stop(personNumber: Int, countNumber: Int)
 }
 
 data class ScanConfig(var buildingName: String, var floor: String, var photoId: Int = 0)

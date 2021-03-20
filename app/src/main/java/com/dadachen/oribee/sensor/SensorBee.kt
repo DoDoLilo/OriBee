@@ -49,7 +49,7 @@ class SensorBee(private val sensorManager: SensorManager) {
         stringBuilder.clear()
         thread(start = true) {
             while (status == Status.Running) {
-                postProcessOrientation()
+//                postProcessOrientation()
                 //note post process must run before generating data string d.
                 val d = "${System.currentTimeMillis() + offset}, ${datas.toCsvString()}"
                 Log.d("sensor", d)

@@ -82,7 +82,7 @@ class MainActivity : AppCompatActivity() {
                         sharedPreferences.edit().putInt("person", personNumber).putInt("count", countNumber).apply()
                         isStart = true
                     } else {
-                        wifiScanManager.stop()
+                        wifiScanManager.stop(personNumber, countNumber)
                         sensorBee.stopRecordAndSave("${externalCacheDir}/IMU-${personNumber}-$countNumber-${sensorBee.headingAngles} ${Build.MODEL}.csv")
                         bt_start_record.setBackgroundColor(Color.GRAY)
                         isStart = false

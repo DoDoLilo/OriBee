@@ -5,13 +5,14 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.net.wifi.WifiManager
+import android.os.Build
 import android.util.Log
 import com.dadachen.oribee.utils.writeToLocalStorage
 
 class WifiScanManager(context: Context, scanConfig: ScanConfig) : ScanManager(context, scanConfig) {
 
     val wifiScanData = WifiScanData(
-        BuildingID = "shilintong",
+        BuildingID = "jiyuan",
         Date = "",
         FPscan = mutableListOf(),
         FPscanMode = "1",
@@ -71,10 +72,10 @@ class WifiScanManager(context: Context, scanConfig: ScanConfig) : ScanManager(co
         }
     }
 
-    override fun stop() {
-        super.stop()
+    override fun stop(personNumber:Int, countNumber:Int) {
+        running = false
         context.unregisterReceiver(wifiScanReceiver)
-        writeToLocalStorage("${context.externalCacheDir}/${scanConfig.buildingName}/floor_${scanConfig.floor}/WIFIlinescan-${System.currentTimeMillis()}.json", wifiScanData)
+        writeToLocalStorage("${context.externalCacheDir}/${scanConfig.buildingName}/WIFI-$personNumber-$countNumber-${Build.MODEL}.json", wifiScanData)
     }
 
     override fun getCount(): Int {
