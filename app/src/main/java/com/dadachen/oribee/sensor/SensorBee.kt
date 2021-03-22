@@ -171,6 +171,7 @@ class SensorBee(private val sensorManager: SensorManager) {
     fun stopRecordAndSave(filePath: String = this.filePath) {
         status = Status.STOPPING
         writeToLocalStorage(filePath, stringBuilder.toString())
+        stringBuilder.clear()
     }
 
 
