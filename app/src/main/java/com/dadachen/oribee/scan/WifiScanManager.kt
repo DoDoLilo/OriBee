@@ -62,6 +62,7 @@ class WifiScanManager(context: Context, scanConfig: ScanConfig) : ScanManager(co
 
     override fun start() {
         val intentFilter = IntentFilter()
+        running = true
         intentFilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION)
         context.registerReceiver(wifiScanReceiver, intentFilter)
         val success = wifiManager.startScan()
@@ -76,6 +77,7 @@ class WifiScanManager(context: Context, scanConfig: ScanConfig) : ScanManager(co
         running = false
         context.unregisterReceiver(wifiScanReceiver)
         writeToLocalStorage("${context.externalCacheDir}/${scanConfig.buildingName}/WIFI-$personNumber-$countNumber-${Build.MODEL}.json", wifiScanData)
+        wifiScanData.FPscan.clear()
     }
 
     override fun getCount(): Int {
