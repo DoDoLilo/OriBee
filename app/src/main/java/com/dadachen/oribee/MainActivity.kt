@@ -73,7 +73,7 @@ class MainActivity : AppCompatActivity() {
                 setTitle(if (!isStart) R.string.start_record else R.string.end_record)
                 setPositiveButton(R.string.dialog_ok) { _, _ ->
                     if (!isStart) {
-                        wifiScanManager.start()
+                        wifiScanManager.start(timeOffset)
                         sensorBee.startRecord(timeOffset)
                         bt_start_record.setBackgroundColor(Color.RED)
                         bt_start_record.text = getString(R.string.end_record)
