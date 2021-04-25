@@ -10,4 +10,5 @@
     <string name="dialog_ok">确认</string>
     <string name="dialog_cancel">取消</string>
     <string name="reset_sensors">重置sensor</string>
+    <string name="reset_offset">重置offset</string>
 </resources>

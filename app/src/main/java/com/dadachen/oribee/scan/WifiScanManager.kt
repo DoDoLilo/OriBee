@@ -28,18 +28,19 @@ class WifiScanManager(context: Context, scanConfig: ScanConfig) : ScanManager(co
             if (success) {
                 val wifiScanInfos = mutableListOf<WifiScanInfo>()
                 var apId = 0
+                val time = getTime()
                 wifiManager.scanResults.forEach {
                     val item = WifiScanInfo(
                         AP = apId++,
                         BSSID = it.BSSID,
                         SSID = it.SSID,
                         Level = it.level,
-                        Date = getTime()
+                        Date = time
                     )
                     wifiScanInfos.add(item)
                 }
                 val fPscan = WifiFPscan(
-                    Date = getTime(),
+                    Date = time,
                     Point = pid++,
                     PosLatg = "0",
                     PosLong = "0",

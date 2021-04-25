@@ -121,6 +121,18 @@ class MainActivity : AppCompatActivity() {
                 }
             }.create().show()
         }
+
+        bt_reset_offset.setOnClickListener {
+            AlertDialog.Builder(this).apply {
+                setTitle("是否重置offset")
+                setPositiveButton("重置"){_,_->
+                    setTimeOffset(0L)
+                }
+                setNegativeButton("取消"){ _, _->
+
+                }
+            }
+        }
     }
 
     private var timeOffset: Long = 0L
@@ -147,16 +159,24 @@ class MainActivity : AppCompatActivity() {
             if (Utils.isIP(ip)) {
                 val remoteTime = getTimeByHttpClient(ip)
                 val localTime = System.currentTimeMillis()
-                timeOffset = remoteTime - localTime
+                setTimeOffset(remoteTime-localTime)
                 bt_server_time.isEnabled = false
                 bt_server_time.visibility = View.INVISIBLE
-                tv_offset_info.text = "offset: $timeOffset"
-                Utils.setValueBySharedPreference(sharedPreferences, "offset", timeOffset.toInt())
-                Log.d("time", "offet: $timeOffset")
+
             } else {
                 Toast.makeText(this, "$ip is not valid", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    private fun setTimeOffset(offset:Long){
+        timeOffset = offset
+        Utils.setValueBySharedPreference(sharedPreferences, "offset", timeOffset.toInt())
+        runOnUiThread {
+            tv_offset_info.text = "offset: $timeOffset"
+        }
+        Log.d("time", "offset: $timeOffset")
+
     }
 
     private var personNumber = 0
