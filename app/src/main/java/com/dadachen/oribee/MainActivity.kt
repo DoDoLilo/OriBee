@@ -31,6 +31,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var sensorBee: SensorBee
     private lateinit var wifiScanManager:WifiScanManager
+    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_choose)
@@ -169,6 +170,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun setTimeOffset(offset:Long){
         timeOffset = offset
         Utils.setValueBySharedPreference(sharedPreferences, "offset", timeOffset.toInt())
@@ -183,9 +185,9 @@ class MainActivity : AppCompatActivity() {
     private var countNumber = 0
 
 
-    private fun  checkAuth(activity: Activity?) {
+    private fun  checkAuth(activity: Activity) {
         if (ContextCompat.checkSelfPermission(
-                activity!!,
+                activity,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
             ) != PackageManager.PERMISSION_GRANTED
         ) {
@@ -193,7 +195,22 @@ class MainActivity : AppCompatActivity() {
                 activity, arrayOf(
                     Manifest.permission.WRITE_EXTERNAL_STORAGE,
                     Manifest.permission.ACCESS_WIFI_STATE,
-                    Manifest.permission.INTERNET
+                    Manifest.permission.INTERNET,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ), 1
+            )
+        }
+        if (ContextCompat.checkSelfPermission(
+                activity,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                activity, arrayOf(
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.ACCESS_WIFI_STATE,
+                    Manifest.permission.INTERNET,
+                    Manifest.permission.ACCESS_FINE_LOCATION
                 ), 1
             )
         }
