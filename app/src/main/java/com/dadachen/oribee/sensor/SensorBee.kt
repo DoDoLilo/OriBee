@@ -51,7 +51,7 @@ class SensorBee(private val sensorManager: SensorManager) {
             while (status == Status.Running) {
 //                postProcessOrientation()
                 //note post process must run before generating data string d.
-                val d = "${System.currentTimeMillis() + offset}, ${datas.toCsvString()}"
+                val d = "${time + offset}, ${datas.toCsvString()}"
                 Log.d("sensor", d)
                 stringBuilder.appendLine(d)
                 Thread.sleep((1000 / frequency).toLong())
@@ -89,6 +89,7 @@ class SensorBee(private val sensorManager: SensorManager) {
 
     private lateinit var sensorListeners: List<SensorEventListener>
     private lateinit var datas: List<FloatArray>
+    private var time:Long = System.currentTimeMillis()
 
     fun registerSensors() {
         datas = sensors.map {
@@ -102,6 +103,7 @@ class SensorBee(private val sensorManager: SensorManager) {
             object : SensorEventListener {
                 override fun onSensorChanged(p0: SensorEvent?) {
                     val item = datas[index]
+                    time = System.currentTimeMillis()
                     for (i in item.indices) {
                         item[i] = p0!!.values[i]
                     }
