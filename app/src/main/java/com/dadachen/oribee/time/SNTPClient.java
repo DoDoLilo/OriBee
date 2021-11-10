@@ -257,7 +257,7 @@ public class SNTPClient {
                     e.printStackTrace();
                 }
             }
-            
+
         }).start();
     }
 }
