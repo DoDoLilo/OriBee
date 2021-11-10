@@ -22,15 +22,19 @@ import com.dadachen.oribee.scan.ScanConfig
 import com.dadachen.oribee.scan.WifiScanManager
 import com.dadachen.oribee.sensor.SensorBee
 import com.dadachen.oribee.sensor.sensorBee
+import com.dadachen.oribee.time.NTPClient
+import com.dadachen.oribee.time.SNTPClient
 import com.dadachen.oribee.time.getTimeByHttpClient
 import com.dadachen.oribee.time.runServer
 import com.dadachen.oribee.utils.Utils
 import kotlinx.android.synthetic.main.activity_choose.*
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var sensorBee: SensorBee
-    private lateinit var wifiScanManager:WifiScanManager
+    private lateinit var wifiScanManager: WifiScanManager
+
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,7 +42,7 @@ class MainActivity : AppCompatActivity() {
         sharedPreferences = getPreferences(Context.MODE_PRIVATE)
         initView()
         checkAuth(this)
-        sensorBee = sensorBee(sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager){
+        sensorBee = sensorBee(sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager) {
             frequency = 200
             sensorTypes(
                 arrayOf(
@@ -51,7 +55,8 @@ class MainActivity : AppCompatActivity() {
                     Sensor.TYPE_MAGNETIC_FIELD,
                     Sensor.TYPE_GRAVITY,
                     Sensor.TYPE_LINEAR_ACCELERATION
-            ))
+                )
+            )
             registerSensors()
 
             addDataChangedListener {
@@ -61,7 +66,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-        wifiScanManager = WifiScanManager(this, ScanConfig("jy","2"))
+        wifiScanManager = WifiScanManager(this, ScanConfig("jy", "2"))
     }
 
 
@@ -80,7 +85,8 @@ class MainActivity : AppCompatActivity() {
                         bt_start_record.text = getString(R.string.end_record)
                         personNumber = ev_person.text.toString().toInt()
                         countNumber = ev_count.text.toString().toInt()
-                        sharedPreferences.edit().putInt("person", personNumber).putInt("count", countNumber).apply()
+                        sharedPreferences.edit().putInt("person", personNumber)
+                            .putInt("count", countNumber).apply()
                         isStart = true
                     } else {
                         wifiScanManager.stop(personNumber, countNumber)
@@ -126,10 +132,10 @@ class MainActivity : AppCompatActivity() {
         bt_reset_offset.setOnClickListener {
             AlertDialog.Builder(this).apply {
                 setTitle("是否重置offset")
-                setPositiveButton("重置"){_,_->
+                setPositiveButton("重置") { _, _ ->
                     setTimeOffset(0L)
                 }
-                setNegativeButton("取消"){ _, _->
+                setNegativeButton("取消") { _, _ ->
 
                 }
             }
@@ -143,26 +149,16 @@ class MainActivity : AppCompatActivity() {
         tv_local_ip_address.text = Utils.getIPAddress(true)
         ev_remote_ip_address.setText(sharedPreferences.getString("ipn", ""))
         var ip = tv_local_ip_address.text.toString()
-        bt_server_time.setOnClickListener {
-            runServer()
-            bt_server_time.text = "服务器已打开"
-            bt_server_time.isEnabled = false
-            bt_time_sync.isEnabled = false
-            bt_time_sync.visibility = View.INVISIBLE
-            ev_remote_ip_address.visibility = View.INVISIBLE
-            ev_remote_ip_address.isEnabled = false
-        }
+
         bt_time_sync.setOnClickListener {
             val num = ev_remote_ip_address.text.toString()
             Utils.setValueBySharedPreference(sharedPreferences, "ipn", num)
             ip = ip.substring(0, ip.indexOfLast { it == '.' } + 1)
             ip += ev_remote_ip_address.text.toString()
             if (Utils.isIP(ip)) {
-                val remoteTime = getTimeByHttpClient(ip)
-                val localTime = System.currentTimeMillis()
-                setTimeOffset(remoteTime-localTime)
-                bt_server_time.isEnabled = false
-                bt_server_time.visibility = View.INVISIBLE
+                SNTPClient.getDate(TimeZone.getDefault(),ip){localTime, remoteTime->
+                    setTimeOffset(remoteTime - localTime)
+                }
 
             } else {
                 Toast.makeText(this, "$ip is not valid", Toast.LENGTH_SHORT).show()
@@ -171,7 +167,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     @SuppressLint("SetTextI18n")
-    private fun setTimeOffset(offset:Long){
+    private fun setTimeOffset(offset: Long) {
         timeOffset = offset
         Utils.setValueBySharedPreference(sharedPreferences, "offset", timeOffset.toInt())
         runOnUiThread {
@@ -185,7 +181,7 @@ class MainActivity : AppCompatActivity() {
     private var countNumber = 0
 
 
-    private fun  checkAuth(activity: Activity) {
+    private fun checkAuth(activity: Activity) {
         if (ContextCompat.checkSelfPermission(
                 activity,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
@@ -219,5 +215,6 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         sensorBee.stopSensors()
+        NTPClient.stop()
     }
 }
