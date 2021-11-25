@@ -96,6 +96,7 @@ class SensorBee(private val sensorManager: SensorManager) {
             when (it.type) {
                 Sensor.TYPE_ROTATION_VECTOR -> FloatArray(4)
                 Sensor.TYPE_GAME_ROTATION_VECTOR -> FloatArray(4)
+                Sensor.TYPE_PRESSURE -> FloatArray(1)
                 else -> FloatArray(3)
             }
         }

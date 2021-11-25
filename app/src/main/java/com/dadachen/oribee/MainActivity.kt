@@ -50,8 +50,15 @@ class MainActivity : AppCompatActivity() {
                     Sensor.TYPE_ORIENTATION,
                     Sensor.TYPE_MAGNETIC_FIELD,
                     Sensor.TYPE_GRAVITY,
+<<<<<<< Updated upstream
                     Sensor.TYPE_LINEAR_ACCELERATION
             ))
+=======
+                    Sensor.TYPE_LINEAR_ACCELERATION,
+                    Sensor.TYPE_PRESSURE
+                )
+            )
+>>>>>>> Stashed changes
             registerSensors()
 
             addDataChangedListener {
