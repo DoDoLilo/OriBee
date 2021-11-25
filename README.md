@@ -19,5 +19,6 @@ The structure of the data shown below:
 |TYPE_MAGNETIC_FIELD|21-23|磁场|
 |TYPE_GRAVITY|24-26|重力|
 |TYPE_LINEAR_ACCELERATION|27-29|线性加速度|
+|TYPE_PRESSURE|30|气压计|
 
 
