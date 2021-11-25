@@ -50,21 +50,16 @@ class MainActivity : AppCompatActivity() {
                     Sensor.TYPE_ORIENTATION,
                     Sensor.TYPE_MAGNETIC_FIELD,
                     Sensor.TYPE_GRAVITY,
-<<<<<<< Updated upstream
-                    Sensor.TYPE_LINEAR_ACCELERATION
-            ))
-=======
                     Sensor.TYPE_LINEAR_ACCELERATION,
                     Sensor.TYPE_PRESSURE
                 )
             )
->>>>>>> Stashed changes
             registerSensors()
 
             addDataChangedListener {
                 runOnUiThread {
                     //note the order and the value location should depend on the sensor types defined above
-                    tv_rotation_vector_4.text = "${it[2][3]}\n${sensorBee.headingAngles}"
+                    tv_rotation_vector_4.text = "气压计度数：${it[9][0]}}"
                 }
             }
         }
